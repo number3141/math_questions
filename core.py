@@ -27,6 +27,7 @@ def calc_example(example):
 def check_user_response(example, user_input):
 	if round(calc_example(example), 2) == round(user_input, 2):
 		return True
+	print(f'Сравнил {round(calc_example(example), 2)} and {round(user_input, 2)}')
 	return False
 
 
