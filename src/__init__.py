@@ -1,0 +1,1 @@
+from src.implementors.interface_app import GraphicApp

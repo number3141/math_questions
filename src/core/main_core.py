@@ -19,27 +19,12 @@ def calc_example(example):
 		case '-':
 			return num_1 - num_2
 		case '*':
-			return round((num_1 * num_2), 2)
+			return num_1 * num_2
 		case '/':
 			return round((num_1 / num_2), 2)
 
 
-def check_user_response(example, user_input):
-	if round(calc_example(example), 2) == round(user_input, 2):
+def check_user_response(correct_answer, user_input):
+	if round(correct_answer, 2) == round(user_input, 2):
 		return True
-	print(f'Сравнил {round(calc_example(example), 2)} and {round(user_input, 2)}')
 	return False
-
-
-class Points:
-	def __init__(self):
-		self._points = 0
-
-	def save_points(self):
-		...
-
-	def get_points(self):
-		return self._points
-
-	def set_points(self, value):
-		self._points = value
