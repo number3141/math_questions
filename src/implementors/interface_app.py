@@ -1,9 +1,23 @@
 import time
 import datetime
+import shelve
 import dearpygui.dearpygui as dpg
 from src.implementors.console_app import App
 from src.core.main_core import check_user_response, generate_example, calc_example
 from src.core.points import Points
+
+
+class ShelvePoints(Points):
+	def save_points(self):
+		with shelve.open('points') as database:
+			key = str(datetime.datetime.now())
+			database[key] = self.get_points()
+			print('Файл сохранён!')
+
+		# Проверка
+		# with shelve.open('points') as database:
+		# 	for key in database:
+		# 		print(key)
 
 
 class TextFilePoints(Points):
@@ -16,7 +30,7 @@ class TextFilePoints(Points):
 
 class GraphicApp(App):
 	def __init__(self):
-		self.points_module = TextFilePoints()
+		self.points_module = ShelvePoints()
 		self.example = generate_example()
 		self.paint_main_window()
 
