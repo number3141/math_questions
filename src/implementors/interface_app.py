@@ -1,42 +1,19 @@
+import random
 import time
-import datetime
-import shelve
 import dearpygui.dearpygui as dpg
-from src.implementors.console_app import App
-from src.core.main_core import check_user_response, generate_example, calc_example
-from src.core.points import Points
+from src.core import check_user_response, generate_example, calc_example
+from src.implementors.points_options import ShelvePoints, TextFilePoints
 
 
-class ShelvePoints(Points):
-	def save_points(self):
-		with shelve.open('points') as database:
-			key = str(datetime.datetime.now())
-			database[key] = self.get_points()
-			print('Файл сохранён!')
-
-		# Проверка
-		# with shelve.open('points') as database:
-		# 	for key in database:
-		# 		print(key)
-
-
-class TextFilePoints(Points):
-	def save_points(self):
-		with open('points.txt', 'w', encoding='utf-8') as f:
-			x = datetime.datetime.now()
-			f.write(f'{x} ----- {self.get_points()}')
-			print('Файл сохранён!')
-
-
-class GraphicApp(App):
+class GraphicApp:
 	def __init__(self):
-		self.points_module = ShelvePoints()
+		self.points_module = TextFilePoints()
 		self.example = generate_example()
-		self.paint_main_window()
+		self.player_name = f'player_{random.randint(1, 100)}'
 
-	def paint_main_window(self):
+	def start(self):
 		dpg.create_context()
-		dpg.create_viewport(title='Fast Math', width=332, height=300, resizable=False)
+		dpg.create_viewport(title='Fast Math', width=332, height=370, resizable=False)
 
 		with dpg.font_registry():
 			# if __name__ == '__main__':
@@ -53,13 +30,37 @@ class GraphicApp(App):
 
 		with dpg.window(tag='main_board'):
 			with dpg.tab_bar():
-				with dpg.tab(label='Главная'):
-					with dpg.group(width=180):
+				with dpg.tab(label='Главная', tag='main_tab'):
+					with dpg.group(tag='name_group'):
+						dpg.add_text('Ваше имя: ')
+						dpg.add_input_text(tag='name_player', default_value=self.player_name)
+						dpg.add_button(label='Начать', callback=self.login)
+
+					with dpg.group(width=180, tag='app_group'):
+						dpg.add_text(tag='name_player_text', default_value=self.player_name)
+						dpg.add_text(tag='points_area', default_value=f'Очков: 0')
 						dpg.add_text(tag='example', default_value=self.example)
-					dpg.add_input_float(tag='answer', width=300, step=0)
-					dpg.add_button(label='Проверить', callback=self.paint_answer, width=300, height=40)
-					dpg.add_button(
-						label='Сохранить', callback=self.points_module.save_points, width=300, height=40)
+						dpg.add_input_float(tag='answer', width=300, step=0)
+						dpg.add_button(label='Проверить', callback=self.paint_answer, width=300, height=40)
+						dpg.add_button(
+							label='Сохранить',
+							callback=self.points_module.save_points,
+							width=300, height=40
+						)
+
+					dpg.hide_item('app_group')
+
+
+				with dpg.tab(label='Лидеры'):
+					with dpg.group(width=180):
+						dpg.add_text(default_value='Список рекордов: ')
+
+						leader_base = self.points_module.load_points()
+						for name in leader_base:
+							dpg.add_text(f'{name} --- {leader_base[name]}')
+
+
+
 
 				with dpg.tab(label='Помощь'):
 					with dpg.group(width=180):
@@ -79,11 +80,12 @@ class GraphicApp(App):
 
 		if check_user_response(correct_answer, user_answer):
 			dpg.add_text(default_value='Правильно! +1 point!', tag='_', parent='main_board')
-			self.points_module.plus_points()
+			self.points_module.plus_points(self.player_name)
 		else:
 			dpg.add_text(default_value='Неправильно! -1 point!', tag='_', parent='main_board')
-			self.points_module.minus_points()
+			self.points_module.minus_points(self.player_name)
 
+		dpg.set_value(item='points_area', value=f'Очков: {self.points_module.get_points(self.player_name)}')
 		time.sleep(2)
 		dpg.delete_item(item='_')
 		self.update_example()
@@ -92,9 +94,20 @@ class GraphicApp(App):
 		self.example = generate_example()
 		dpg.set_value(item='example', value=self.example)
 
+	def login(self):
+		self.player_name = dpg.get_value(item='name_player')
+		dpg.set_value(item='name_player_text', value=self.player_name)
+		dpg.delete_item('name_group')
+		dpg.show_item('app_group')
 
-if __name__ == '__main__':
+		self.points_module.add_player(self.player_name)
+
+
+
+def graphic_start():
 	t = GraphicApp()
+	t.start()
+
 
 
 

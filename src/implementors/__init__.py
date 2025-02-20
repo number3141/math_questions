@@ -1,1 +1,2 @@
-from src.implementors.interface_app import GraphicApp
+from src.implementors.interface_app import graphic_start
+from src.implementors.console_app import console_start

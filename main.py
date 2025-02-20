@@ -1,8 +1,6 @@
-from src import GraphicApp
+from src import graphic_start, console_start
 
 
-if __name__ == '__main__':
-	app = GraphicApp()
-	while True:
-		app.answer()
+graphic_start()
 
+# console_start()
