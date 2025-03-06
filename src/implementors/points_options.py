@@ -1,45 +1,35 @@
 import shelve
-from src.core import PointsBoard
+from src.core import Points
 
-class ShelvePoints(PointsBoard):
+class ShelvePoints(Points):
 	def save_points(self):
 		with shelve.open('points') as database:
-			for name in self._pointsboard:
+			self.points_board = dict(sorted(self.points_board.items(), key=lambda item: item[1], reverse=True)[:3])
+			for name in self.points_board:
 				database[name] = self.get_points(name)
 			print('Файл сохранён!')
 
 	def load_points(self):
 		with shelve.open('points') as database:
-			result_database = {}
 			for name in database:
-				result_database[name] = database.get(name)
-
-			sorted_result = dict(sorted(result_database.items(), key=lambda item: item[1], reverse=True)[:10])
+				self.points_board[name] = database.get(name)
 			print('База лидеров загружена!')
-			return sorted_result
 
 
-
-class TextFilePoints(PointsBoard):
+class TextFilePoints(Points):
 	def save_points(self):
-		with open('points.txt', 'a', encoding='utf-8') as f:
-			for name in self._pointsboard:
+		with open('points.txt', 'w', encoding='utf-8') as f:
+			self.points_board = dict(sorted(self.points_board.items(), key=lambda item: item[1], reverse=True)[:3])
+			for name in self.points_board:
 				f.write(f'{name} ----- {self.get_points(name)}\n')
-			print('Файл сохранён!')
 
 	def load_points(self):
 		with open('points.txt', 'r+', encoding='utf-8') as database:
 			text = database.read().split('\n')
 			text.remove('')
-			result_database = {}
 			for player_str in text:
 				name, points = player_str.split('-----')
-				result_database[name] = points
-
-			sorted_result = dict(sorted(result_database.items(), key=lambda item: item[1], reverse=True)[:10])
-			print('База лидеров загружена!')
-			return sorted_result
-
+				self.points_board[name] = int(points)
 
 if __name__ == '__main__':
 	t = ShelvePoints()

@@ -1,25 +1,26 @@
 from abc import ABC, abstractmethod
 
-class PointsBoard(ABC):
+class Points(ABC):
 	def __init__(self):
-		self._pointsboard = {
-			# name: 0
+		self.points_board = {
+			# alex: 21,
+			# bob: 15,
 		}
 
-	def add_player(self, player_name, points=0):
-		self._pointsboard[player_name] = points
+	def get_players(self):
+		return self.points_board
 
-	def get_points(self, name=None):
-		if not name:
-			return self._pointsboard
-		else:
-			return self._pointsboard.get(name)
+	def add_player(self, name):
+		self.points_board[name] = 0
+
+	def get_points(self, name):
+		return self.points_board.get(name, self.points_board)
 
 	def plus_points(self, name):
-		self._pointsboard[name] += 1
+		self.points_board[name] += 1
 
 	def minus_points(self, name):
-		self._pointsboard[name] -= 1
+		self.points_board[name] -= 1
 
 	@abstractmethod
 	def save_points(self):

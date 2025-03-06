@@ -16,12 +16,6 @@ class GraphicApp:
 		dpg.create_viewport(title='Fast Math', width=332, height=370, resizable=False)
 
 		with dpg.font_registry():
-			# if __name__ == '__main__':
-			# 	print('Главный')
-			# 	path = './LiteralRegular.otf'
-			# else:
-			# 	path = 'src/LiteralRegular.otf'
-
 			with dpg.font('src/LiteralRegular.otf', 20, tag='main_font'):
 				dpg.add_font_range_hint(dpg.mvFontRangeHint_Cyrillic)
 
@@ -50,23 +44,34 @@ class GraphicApp:
 
 					dpg.hide_item('app_group')
 
-
 				with dpg.tab(label='Лидеры'):
-					with dpg.group(width=180):
-						dpg.add_text(default_value='Список рекордов: ')
+					with dpg.group():
+						dpg.add_text('Список рекордов: ')
 
-						leader_base = self.points_module.load_points()
-						for name in leader_base:
-							dpg.add_text(f'{name} --- {leader_base[name]}')
-
-
-
+						self.points_module.load_points()
+						for name, points in self.points_module.get_players().items():
+							dpg.add_text(f'{name} --- {points}')
 
 				with dpg.tab(label='Помощь'):
-					with dpg.group(width=180):
-						dpg.add_text(default_value='Ответы деления округлять до сотых')
+					with dpg.group():
+						dpg.add_text('Ответы деления округлять до сотых')
+
+		with dpg.theme() as global_theme:
+			with dpg.theme_component():
+				dpg.add_theme_color(dpg.mvThemeCol_WindowBg, (205, 241, 240))
+				dpg.add_theme_color(dpg.mvThemeCol_Text, (0, 0, 0))
+				dpg.add_theme_color(dpg.mvThemeCol_Tab, (75, 212, 208))
+				dpg.add_theme_color(dpg.mvThemeCol_TabHovered, (42, 155, 152))
+				dpg.add_theme_color(dpg.mvThemeCol_TabActive, (30, 118, 116))
+				dpg.add_theme_color(dpg.mvThemeCol_FrameBg, (215, 254, 253))
+				dpg.add_theme_color(dpg.mvThemeCol_Button, (30, 118, 116))
+
+				dpg.add_theme_style(dpg.mvStyleVar_ChildBorderSize, 4)
+				# dpg.add_theme_style(dpg.mvStyleVar_FrameBorderSize, 1)
+				dpg.add_theme_style(dpg.mvStyleVar_FrameRounding, 5)
 
 		dpg.bind_font('main_font')
+		dpg.bind_theme(global_theme)
 		dpg.bind_item_font(item='example', font='example_font')
 		dpg.setup_dearpygui()
 		dpg.show_viewport()
@@ -86,7 +91,7 @@ class GraphicApp:
 			self.points_module.minus_points(self.player_name)
 
 		dpg.set_value(item='points_area', value=f'Очков: {self.points_module.get_points(self.player_name)}')
-		time.sleep(2)
+		time.sleep(1)
 		dpg.delete_item(item='_')
 		self.update_example()
 
@@ -96,22 +101,13 @@ class GraphicApp:
 
 	def login(self):
 		self.player_name = dpg.get_value(item='name_player')
+		self.points_module.add_player(self.player_name)
+
 		dpg.set_value(item='name_player_text', value=self.player_name)
 		dpg.delete_item('name_group')
 		dpg.show_item('app_group')
-
-		self.points_module.add_player(self.player_name)
-
 
 
 def graphic_start():
 	t = GraphicApp()
 	t.start()
-
-
-
-
-
-
-
-
