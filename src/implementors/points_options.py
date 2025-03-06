@@ -24,17 +24,13 @@ class TextFilePoints(Points):
 				f.write(f'{name} ----- {self.get_points(name)}\n')
 
 	def load_points(self):
-		with open('points.txt', 'r+', encoding='utf-8') as database:
-			text = database.read().split('\n')
-			text.remove('')
-			for player_str in text:
-				name, points = player_str.split('-----')
-				self.points_board[name] = int(points)
-
-if __name__ == '__main__':
-	t = ShelvePoints()
-	t.add_player('andrey')
-	t.plus_points('andrey')
-	t.plus_points('andrey')
-	t.save_points()
-	t.load_points()
+		try:
+			with open('points.txt', 'r+', encoding='utf-8') as database:
+				text = database.read().split('\n')
+				text.remove('')
+				for player_str in text:
+					name, points = player_str.split('-----')
+					self.points_board[name] = int(points)
+		except FileNotFoundError:
+			_ = open('points.txt', 'w')
+			_.close()

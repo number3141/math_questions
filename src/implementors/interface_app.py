@@ -16,10 +16,10 @@ class GraphicApp:
 		dpg.create_viewport(title='Fast Math', width=332, height=370, resizable=False)
 
 		with dpg.font_registry():
-			with dpg.font('src/LiteralRegular.otf', 20, tag='main_font'):
+			with dpg.font('LiteralRegular.otf', 20, tag='main_font'):
 				dpg.add_font_range_hint(dpg.mvFontRangeHint_Cyrillic)
 
-			with dpg.font('src/LiteralRegular.otf', 40, tag='example_font'):
+			with dpg.font('LiteralRegular.otf', 40, tag='example_font'):
 				dpg.add_font_range_hint(dpg.mvFontRangeHint_Cyrillic)
 
 		with dpg.window(tag='main_board'):
